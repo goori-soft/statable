@@ -42,3 +42,17 @@ myInstance
     .history.back()
     .history.back()
     .history.forward();
+
+const props = {
+    level: 13,
+    life: 5,
+    xp: 5000
+};
+
+myInstance
+    .unsubscribe(myObserver)
+    .set({props});
+
+const myState = myInstance.cloneState(true);
+myState.props.xp = 7000;
+console.log(myInstance.state.props, myState.props);

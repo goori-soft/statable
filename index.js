@@ -1,5 +1,32 @@
 const Observable = require('@goori-soft/observable');
 
+/**
+ * This is a deep clone function
+ * @param {Object} obj 
+ */
+const cloneDeepObj = (obj)=>{
+    const cloneObj = {};
+
+    for(let i in obj){
+        if(typeof(obj[i]) == 'object' && obj[i] != null){
+            cloneObj[i] = cloneDeepObj(obj[i]);
+        }
+        else if(typeof(obj[i]) == 'function'){
+            cloneObj[i] = obj[i];
+            cloneObj[i].bind(cloneObj);
+        }
+        else{
+            cloneObj[i] = obj[i];
+        }
+    }
+
+    return cloneObj;
+}
+
+/**
+ * This is a simple shallow clone function
+ * @param {Object} state 
+ */
 const cloneState = (state)=>{
     let newState = {};
 
@@ -195,6 +222,20 @@ class Statable extends Observable{
         }
         
         return this;
+    }
+
+    /**
+     * Return a clone of state object
+     * If state has objects they will be passed as reference. Clone fucntion is one level only.
+     * If you need a deep clone set deep iquals true.
+     */
+    cloneState(deep){
+        if(!deep){
+            return cloneState(this.state);
+        }
+        else{
+            return cloneDeepObj(this.state);
+        }
     }
 
     /**
