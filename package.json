@@ -25,6 +25,6 @@
   },
   "homepage": "https://github.com/goori-soft/statable#readme",
   "dependencies": {
-    "@goori-soft/observable": "^1.0.1"
+    "@goori-soft/observable": "^1.0.2"
   }
 }

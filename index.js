@@ -11,32 +11,31 @@ const cloneState = (state)=>{
 }
 
 class History{
-    history = [];
-    pointer = -1;
-    parent = null;
 
     constructor(parent){
+        this.history = [];
+        this.pointer = -1;
         this.parent = parent;
     }
 
-    back = ()=>{
+    back(){
         let p = this.pointer - 1;
         return this.setPointer(p);
     }
 
-    forward = ()=>{
+    forward(){
         let p = this.pointer + 1;
         return this.setPointer(p);
     }
 
-    getParent = ()=>{
+    getParent(){
         if(this.parent){
             return this.parent
         }
         return this;
     }
 
-    normalize = ()=>{
+    normalize(){
         const _ = this;
         this.history = this.history.filter((state, index)=>{
             if(index > _.pointer) return false;
@@ -46,7 +45,7 @@ class History{
         return this.history;
     }
 
-    push = (state)=>{
+    push(state){
         this.normalize();
         this.history.push(state);
         this.pointer++;
@@ -54,7 +53,7 @@ class History{
         return this.getParent();
     }
 
-    setPointer = (pointer)=>{
+    setPointer(pointer){
         if(pointer < 0) pointer = 0;
         if(pointer >= this.history.length) pointer = this.history.length - 1;
 
@@ -72,14 +71,12 @@ class History{
 
 class Statable extends Observable{
 
-    history = null;
-    historyPointer = 0;
-    state = {};
-    status = null;
-    statusObservers = [];
-
     constructor(status){
         super();
+
+        this.status = null;
+        this.state = {};
+        this.statusObservers = [];
 
         if(typeof(status) == 'undefined'){
             this.status = Statable.status.DISABLE;
@@ -95,7 +92,7 @@ class Statable extends Observable{
     /**
      * Change status to DISABLE
      */
-    disable = ()=>{
+    disable(){
         return this.setStatus(Statable.status.DISABLE);
     }
 
@@ -104,7 +101,7 @@ class Statable extends Observable{
      * Get a variable from state
      * @param {String} variable 
      */
-    get = (variableName)=>{
+    get(variableName){
         if(typeof(variableName) != 'string') return undefined;
         return this.state[variableName];
     }
@@ -112,7 +109,7 @@ class Statable extends Observable{
     /**
      * Notify all 'on' function registreds
      */
-    notifyStatusObservers = ()=>{
+    notifyStatusObservers(){
         this.statusObservers.map( observer =>{
             observer(this.status, this);
         });
@@ -123,7 +120,7 @@ class Statable extends Observable{
      * @param {String} status 
      * @param {Function} callback 
      */
-    on = (status, callback)=>{
+    on(status, callback){
         if(typeof(callback) != 'function') return this;
         status = status.toString().toUpperCase();
 
@@ -140,30 +137,30 @@ class Statable extends Observable{
         return this;
     }
 
-    onStatusChange = (callback)=>{
+    onStatusChange(callback){
         return this.on('statusChange', callback);
     }
 
-    onReady = (callback)=>{
+    onReady(callback){
         return this.on('ready', callback);
     }
 
-    onError = (callback)=>{
+    onError(callback){
         return this.on('error', callback);
     }
 
-    onTrying = (callback)=>{
+    onTrying(callback){
         return this.on('trying', callback);
     }
 
-    onDisable = (callback)=>{
+    onDisable(callback){
         return this.on('disable', callback);
     }
 
     /**
      * Change the status to READY
      */
-    ready = ()=>{
+    ready(){
         return this.setStatus(Statable.status.READY);
     }
 
@@ -171,7 +168,7 @@ class Statable extends Observable{
      * Change de state object
      * @param {Object} state 
      */
-    set = (state)=>{
+    set(state){
         let hasChanges = false;
 
         if(typeof(state) == 'object'){
@@ -191,7 +188,7 @@ class Statable extends Observable{
         return this;
     }
 
-    setStatus = (newStatus)=>{
+    setStatus(newStatus){
         if(newStatus != this.status){
             this.status = newStatus;
             this.notifyStatusObservers();
@@ -207,7 +204,7 @@ class Statable extends Observable{
      * @param {Promise} promise 
      * @param {String} variableName
      */
-    try = (promise, variableName)=>{
+    try(promise, variableName){
         this.setStatus(Statable.status.TRYING);
         const toReturn = Promise.resolve(promise);
 
@@ -229,16 +226,19 @@ class Statable extends Observable{
     /**
      * Change status to TRYING
      */
-    trying = ()=>{
+    trying(){
         return this.setStatus(Statable.status.TRYING);
     }
+}
 
-    static status = {
-        DISABLE: 'DISABLE',
-        READY: 'READY',
-        TRYING: 'TRYING',
-        ERROR: 'ERROR'
-    }
+/**
+ * Static property
+ */
+Statable.status = {
+    DISABLE: 'DISABLE',
+    READY: 'READY',
+    TRYING: 'TRYING',
+    ERROR: 'ERROR'
 }
 
 module.exports = Statable;
