@@ -161,6 +161,10 @@ class Statable extends Observable{
 
         this.statusObservers.push(func);
 
+        if(this.status == status){
+            callback(this.status, this);
+        }
+
         return this;
     }
 
