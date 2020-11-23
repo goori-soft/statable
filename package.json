@@ -1,6 +1,6 @@
 {
   "name": "@goori-soft/statable",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Simple state and status manager",
   "main": "index.js",
   "scripts": {
