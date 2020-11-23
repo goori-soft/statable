@@ -117,12 +117,25 @@ class Statable extends Observable{
     }
 
     /**
+     * Return a clone of state object
+     * If state has objects they will be passed as reference. Clone fucntion is one level only.
+     * If you need a deep clone set deep iquals true.
+     */
+    cloneState(deep){
+        if(!deep){
+            return cloneState(this.state);
+        }
+        else{
+            return cloneDeepObj(this.state);
+        }
+    }
+
+    /**
      * Change status to DISABLE
      */
     disable(){
         return this.setStatus(Statable.status.DISABLE);
     }
-
 
     /**
      * Get a variable from state
@@ -165,7 +178,7 @@ class Statable extends Observable{
             callback(this.status, this);
         }
 
-        return this;
+        return func;
     }
 
     onStatusChange(callback){
@@ -229,28 +242,13 @@ class Statable extends Observable{
     }
 
     /**
-     * Return a clone of state object
-     * If state has objects they will be passed as reference. Clone fucntion is one level only.
-     * If you need a deep clone set deep iquals true.
-     */
-    cloneState(deep){
-        if(!deep){
-            return cloneState(this.state);
-        }
-        else{
-            return cloneDeepObj(this.state);
-        }
-    }
-
-    /**
-     * Try to execute a promise.
-     * This method changes the object's status automatically.
-     * If variableName is given, the positive result of the promise is automatically allocated to this state variable.
+     * Try to onReadyFunctionleName is given, the positive result of the promise is automatically allocated to this state variable.
      * @param {Promise} promise 
      * @param {String} variableName
      */
     try(promise, variableName){
         this.setStatus(Statable.status.TRYING);
+        console.log('trying?: ', this.status)
         const toReturn = Promise.resolve(promise);
 
         toReturn.then(value=>{
@@ -273,6 +271,15 @@ class Statable extends Observable{
      */
     trying(){
         return this.setStatus(Statable.status.TRYING);
+    }
+
+    unsubscribe(func){
+        this.statusObservers = this.statusObservers.filter((indexFunc)=>{
+            if(indexFunc == func) return false;
+            return true;
+        });
+
+        return Observable.prototype.unsubscribe.call(this, func);
     }
 }
 

@@ -9,18 +9,25 @@ const myObserver = (state, obj)=>{
 
 const myInstance = new myClass();
 
+/**
+ * myInstance.on returns a function to be used to stop listening
+ */
 myInstance
     .subscribe(myObserver)
 
     .on('statusChange', (status)=>{
         console.log(status);
-    })
-    
+    });
+
+const onReadyFunction = myInstance
     .on('ready', (status, obj)=>{
         console.log('All ready here!');
         console.log('Message from status observer: ' + obj.get('message'));
-    })
+        myInstance.unsubscribe(onReadyFunction);
+    });
 
+
+myInstance
     .try(new Promise((resolve, reject)=>{
         setTimeout(()=>{
             resolve('Promise done!');
@@ -30,6 +37,15 @@ myInstance
     .then(value => {
         console.log('Message directly from the promise resolver: ' + value);
     });
+
+setTimeout(()=>{
+    console.log('trying again...');
+    myInstance.try(new Promise((resolve, reject)=>{
+        //Should not call this in onReadyFunction
+        resolve('Change the message');
+    }), 'message');
+}, 4000);
+
 
 myInstance
     .set({name: 'Mary'})
