@@ -103,6 +103,7 @@ class Statable extends Observable{
 
         this.status = null;
         this.state = {};
+        this._changingState = false;
         this.statusObservers = [];
 
         if(typeof(status) == 'undefined'){
@@ -114,6 +115,14 @@ class Statable extends Observable{
 
         this.history = new History(this);
         this.history.push(cloneState(this.state));
+    }
+
+    afterSetState(oldState){
+        //nothing to do here;
+    }
+
+    beforeSetState(newState){
+        //nothing to do here;
     }
 
     /**
@@ -214,19 +223,28 @@ class Statable extends Observable{
      */
     set(state){
         let hasChanges = false;
+        let oldState = cloneState(this.state);
+        let clone = cloneState(this.state);
 
         if(typeof(state) == 'object'){
             for(let i in state){
-                if(this.state[i] != state[i]){
-                    this.state[i] = state[i];
+                if(clone[i] != state[i]){
+                    clone[i] = state[i];
                     hasChanges = true;
                 }
             }
         }
 
         if(hasChanges){
-            this.history.push(cloneState(this.state));
+            this._changingState = true;
+
+            this.beforeSetState(clone);
+            this.state = clone;
+            this.history.push(this.state);
+            this.afterSetState(oldState);
             this.notify(this.state);
+
+            this._changingState = false;
         }
 
         return this;

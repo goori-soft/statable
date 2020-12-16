@@ -1,6 +1,14 @@
 const Statable = require('./index.js');
 class myClass extends Statable{
     state = {}
+
+    beforeSetState(newState){
+        console.log('newState', newState);
+    }
+
+    afterSetState(oldState){
+        console.log('oldState', oldState);
+    }
 }
 
 const myObserver = (state, obj)=>{
@@ -70,5 +78,6 @@ myInstance
     .set({props});
 
 const myState = myInstance.cloneState(true);
-myState.props.xp = 7000;
+console.log(myState);
+//myState.props.xp = 7000;
 console.log(myInstance.state.props, myState.props);
