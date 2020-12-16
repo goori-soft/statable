@@ -117,10 +117,18 @@ class Statable extends Observable{
         this.history.push(cloneState(this.state));
     }
 
+    /**
+     * This method is called just after instance updates the state
+     * @param {Object} oldState 
+     */
     afterSetState(oldState){
         //nothing to do here;
     }
 
+    /**
+     * This method is called before instance updates the state
+     * @param {Object} newState 
+     */
     beforeSetState(newState){
         //nothing to do here;
     }
@@ -153,6 +161,18 @@ class Statable extends Observable{
     get(variableName){
         if(typeof(variableName) != 'string') return undefined;
         return this.state[variableName];
+    }
+
+    /**
+     * Copares the status of instance
+     * @param {String} status 
+     */
+    is(status){
+        if(typeof(status) != 'string') return false;
+        status = status.toUpperCase().trim();
+        if(status == 'TRY') status = 'TRYING';
+        if(this.status.toUpperCase().trim() == status) return true;
+        return false;
     }
 
     /**
